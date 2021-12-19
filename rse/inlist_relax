@@ -1,0 +1,29 @@
+&star_job
+    create_pre_main_sequence_model = .true.
+    
+    change_initial_net = .true. 
+    new_net_name = 'pp_cno_extras_o18_ne22.net'
+    
+    save_model_when_terminate = .true.
+    save_model_filename = 'pms.mod'
+    steps_to_take_before_terminate = 1
+/
+
+&eos
+/
+
+&kap
+  use_Type2_opacities = .true.
+  Zbase = 0.01831911
+/
+
+&controls
+    initial_mass = 1 ! in Msun units
+    !initial_mass = 0.99999
+    max_age = 4.572e9
+    
+    initial_y = 0.27238323
+    initial_z = 0.01831911
+    
+    x_logical_ctrl(1) = .false.
+/
