@@ -159,14 +159,16 @@
              
              !! Calculate core_avg_eps, new_core_mass, and core_avg_rho
              
+             M_BH = s% xtra(1) ! s% M_center / 2 ! g
+             L_BH = s% xtra(2)
+             
              ! Eddington luminosity 
              !L_BH = get_Ledd(s,1)/Lsun
-             M_BH = s% xtra(1) ! s% M_center / 2 ! g
-             kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
-             L_BH = pi4 * clight * s% cgrav(1) * M_BH / kap_face ! erg/s
+             !kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
+             !L_BH = pi4 * clight * s% cgrav(1) * M_BH / kap_face ! erg/s
              !L_BH = 0.13 / kap_face * M_BH / (1d-5 * Msun) * Lsun
              
-             ! black hole mass from the accretion rate 
+             ! get new black hole mass from the accretion rate 
              M_dot = L_BH / (rad_eff * pow(clight, 2)) ! g/s 
              dm_dt = (1 - rad_eff) * M_dot * s% dt ! g 
              M_BH_new = M_BH + dm_dt ! g 
@@ -174,9 +176,12 @@
              !new_core_mass = s% M_center / Msun + dm_dt / Msun
              new_core_mass = 2 * M_BH_new / Msun ! assume cavity is of equal mass to BH 
              
+             ! recalculate luminosity based off the new BH mass 
+             kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
+             L_BH = pi4 * clight * s% cgrav(1) * M_BH_new / kap_face ! erg/s
              core_avg_eps = L_BH / Lsun / new_core_mass 
              
-             ! Bondi radius, Warrick Ball's Ph.D. thesis Eqn. (3.2) 
+             ! calculate Bondi radius, Warrick Ball's Ph.D. thesis Eqn. (3.2) 
              R_B = 2 * s% cgrav(1) * M_BH_new / pow(s% csound(1), 2) ! cm 
              core_avg_rho = 4/3*pi * new_core_mass * Msun / pow(R_B, 3) ! g/cm^3
              

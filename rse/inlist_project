@@ -33,7 +33,7 @@
     x_ctrl(1) = 0.1 ! radiative efficiency 
     x_logical_ctrl(1) = .true. ! accrete onto black hole 
     
-    write_profiles_flag = .true.
+    write_profiles_flag = .false.
     write_pulse_data_with_profile = .true.
     pulse_data_format = 'GYRE' ! 'FGONG'
     format_for_FGONG_data = '(1P5E16.9,x)'
