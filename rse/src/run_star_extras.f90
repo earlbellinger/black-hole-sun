@@ -74,7 +74,7 @@
          type (star_info), pointer :: s
          
          real(dp) :: M_BH, L_BH, new_core_mass, core_avg_eps, &
-            core_avg_rho, R_B, kap_face
+            core_avg_rho, R_B, M_dot_Bondi, L_Bondi, L_Eddington, kap_face, rad_eff, con_eff
          
          ierr = 0
          call star_ptr(id, s, ierr)
@@ -83,32 +83,51 @@
          if (s% x_logical_ctrl(1)) then
              write(*, *) '** extras_startup'
              write(*, *) 'put the black hole in the center'
-             write(*, *) 'calculate the Bondi radius and the Eddington luminosity'
+             write(*, *) 'calculate the Bondi radius and the luminosities'
              write(*, *) 'assume that there is a cavity of equal mass to the black hole'
+             
+             rad_eff = s% x_ctrl(1) ! radiative efficiency 
+             con_eff = 0.1 !s% x_ctrl(2) ! convective efficiency 
+             !inner_bound = s% x_ctrl(2) ! r_0 = 1/b * Bondi radius
              
              new_core_mass = s% job% new_core_mass
              M_BH = Msun * new_core_mass / 2 ! black hole seed mass 
              
-             ! Eddington luminosity 
-             kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
-             L_BH = pi4 * clight * s% cgrav(1) * M_BH / kap_face
+             !kap_face = interp_val_to_pt(s% opacity, s% nz, s% nz, s% dq, 'kap_face')
+             kap_face = s% opacity(s% nz)
+             L_BH = pi4 * clight * s% cgrav(s% nz) * M_BH / kap_face ! Eddington luminosity 
+             L_Eddington = L_BH
              !L_BH = 0.13 / kap_face * M_BH / (1d-5 * Msun) * Lsun ! Clayton 1975
              
+             M_dot_Bondi = 16*pi*con_eff/(rad_eff / (1-rad_eff))/s% gamma1(s% nz) * pow(s% cgrav(s% nz) * M_BH, 2) / s% csound(s% nz) * s% rho(s% nz) / pow(clight, 2)
+             L_Bondi = rad_eff * M_dot_Bondi * pow(clight, 2)
+             
+             s% xtra(8) = 0
+             if (L_Bondi < L_BH) then
+                write(*, *) 'Bondi accretion'
+                L_BH = L_Bondi
+                s% xtra(8) = 1
+                else
+                write(*, *) 'Eddington accretion'
+             end if 
+             
              write(*, *) 'initial M_center', s% M_center
-             write(*, *) 'initial csound(1)', s% csound(1)
+             write(*, *) 'initial csound(s% nz)', s% csound(s% nz)
              write(*, *) 'initial kap_face', kap_face
              
-             core_avg_eps = L_BH / Lsun / new_core_mass
+             core_avg_eps = L_BH / (new_core_mass * Msun)
              
              ! Bondi radius, Warrick Ball's Ph.D. thesis Eqn. (3.2) 
-             R_B = 2 * s% cgrav(1) * M_BH / pow(s% csound(1), 2)
-             !next_R_center = pow(s% M_center/(core_avg_rho*four_thirds_pi),one_third)
-             !core_avg_rho = 1/(4/3*pi) * new_core_mass * Msun / pow(R_B, 3)
-             core_avg_rho = 4/3*pi * new_core_mass * Msun / pow(R_B, 3)
+             R_B = 2 * s% cgrav(s% nz) * M_BH / pow(s% csound(s% nz), 2)
+             core_avg_rho = 1/(4/3*pi) * new_core_mass * Msun / pow(R_B, 3)
              
              s% xtra(1) = M_BH
              s% xtra(2) = L_BH
              s% xtra(3) = R_B
+             s% xtra(6) = s% X(1) ! initial hydrogen abundance of the photosphere 
+             s% xtra(7) = kap_face ! opacity of the centerpoint
+             s% xtra(9) = L_Bondi
+             s% xtra(10) = L_Eddington
              
              write(*, *) 'star mass', s% Mstar / Msun
              write(*, *) 'M_BH', M_BH / Msun
@@ -134,7 +153,7 @@
          type (star_info), pointer :: s
          
          real(dp) :: M_BH, L_BH, new_core_mass, core_avg_eps, &
-            core_avg_rho, M_dot, rad_eff, R_B, kap_face, M_BH_new, dm_dt
+            core_avg_rho, M_dot, M_dot_Bondi, L_Bondi, L_Eddington, rad_eff, con_eff, R_B, kap_face, M_BH_new, dm_dt
          
          ierr = 0
          call star_ptr(id, s, ierr)
@@ -146,7 +165,8 @@
          !            relax_core_years_for_dt
          !
          ! x_ctrl: (1) radiative efficiency 
-         !         (2) Bondi radius factor (NOT USED)
+         !         (2) convective efficiency (NOT USED)
+         !         (3) Bondi radius factor (NOT USED)
          
          if (s% x_logical_ctrl(1)) then
              write(*, *) '** extras_start_step'
@@ -154,19 +174,14 @@
              write(*, *) 'use the Eddington luminosity to find the accretion rate M_dot'
              write(*, *) 'update the mass and then calculate the new Bondi radius'
              
-             rad_eff = s% x_ctrl(1) ! radiative efficiency
+             rad_eff = s% x_ctrl(1) ! radiative efficiency 
+             con_eff = 0.1 !s% x_ctrl(2) ! convective efficiency 
              !inner_bound = s% x_ctrl(2) ! r_0 = 1/b * Bondi radius
              
              !! Calculate core_avg_eps, new_core_mass, and core_avg_rho
              
              M_BH = s% xtra(1) ! s% M_center / 2 ! g
              L_BH = s% xtra(2)
-             
-             ! Eddington luminosity 
-             !L_BH = get_Ledd(s,1)/Lsun
-             !kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
-             !L_BH = pi4 * clight * s% cgrav(1) * M_BH / kap_face ! erg/s
-             !L_BH = 0.13 / kap_face * M_BH / (1d-5 * Msun) * Lsun
              
              ! get new black hole mass from the accretion rate 
              M_dot = L_BH / (rad_eff * pow(clight, 2)) ! g/s 
@@ -177,19 +192,40 @@
              new_core_mass = 2 * M_BH_new / Msun ! assume cavity is of equal mass to BH 
              
              ! recalculate luminosity based off the new BH mass 
-             kap_face = interp_val_to_pt(s% opacity, 2, s% nz, s% dq, 'kap_face')
-             L_BH = pi4 * clight * s% cgrav(1) * M_BH_new / kap_face ! erg/s
-             core_avg_eps = L_BH / Lsun / new_core_mass 
+             kap_face = s% opacity(s% nz)
+             L_BH = pi4 * clight * s% cgrav(s% nz) * M_BH_new / kap_face ! erg/s
+             L_Eddington = L_BH
+             
+             M_dot_Bondi = 16*pi*con_eff/(rad_eff / (1-rad_eff))/s% gamma1(s% nz) * pow(s% cgrav(s% nz) * M_BH_new, 2) / s% csound(s% nz) * s% rho(s% nz) / pow(clight, 2)
+             L_Bondi = rad_eff * M_dot_Bondi * pow(clight, 2)
+             
+             s% xtra(8) = 0
+             write(*, *) "L_BH", L_BH
+             write(*, *) "L_B" , L_Bondi
+             if (L_Bondi < L_BH) then
+                write(*, *) 'Bondi accretion'
+                L_BH = L_Bondi
+                s% xtra(8) = 1
+                else
+                write(*, *) 'Eddington accretion'
+             end if 
+             
+             core_avg_eps = L_BH / (new_core_mass * Msun)
              
              ! calculate Bondi radius, Warrick Ball's Ph.D. thesis Eqn. (3.2) 
-             R_B = 2 * s% cgrav(1) * M_BH_new / pow(s% csound(1), 2) ! cm 
-             core_avg_rho = 4/3*pi * new_core_mass * Msun / pow(R_B, 3) ! g/cm^3
+             R_B = 2 * s% cgrav(s% nz) * M_BH_new / pow(s% csound(s% nz), 2) ! cm 
+             core_avg_rho = 1/(4/3*pi) * new_core_mass * Msun / pow(R_B, 3) ! g/cm^3
              
              s% xtra(1) = M_BH_new
              s% xtra(2) = L_BH
              s% xtra(3) = R_B
              s% xtra(4) = M_dot
              s% xtra(5) = dm_dt
+             !s% xtra(6) ! initial X
+             s% xtra(7) = kap_face ! opacity of the centerpoint
+             !s% xtra(8) ! Bondi or Eddington accretion 
+             s% xtra(9) = L_Bondi
+             s% xtra(10) = L_Eddington
              
              write(*, *) 'star mass', s% Mstar / Msun
              write(*, *) 'M_BH',     M_BH      / Msun
@@ -198,6 +234,7 @@
              write(*, *) 'R_B',      R_B       / Rsun
              write(*, *) 'M_dot',    M_dot     / Msun
              
+             write(*, *) 'opacity', s% opacity(s% nz)
              write(*, *) 'M_center',      s% M_center
              write(*, *) 'new_core_mass', new_core_mass
              write(*, *) 'core_avg_eps',  core_avg_eps
@@ -249,7 +286,7 @@
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
-         how_many_extra_history_columns = 5
+         how_many_extra_history_columns = 11
       end function how_many_extra_history_columns
       
       
@@ -260,15 +297,25 @@
          integer, intent(out) :: ierr
          type (star_info), pointer :: s
          
-         !real(dp) :: M_BH, L_BH, M_dot, rad_eff, R_B, kap_face, dm_dt
+         integer :: i
+         real(dp) :: X0, mX0, rX0
          
          ierr = 0
          call star_ptr(id, s, ierr)
          if (ierr /= 0) return
          
+         X0 = s% xtra(6) 
+         do i = s% nz, 1, -1
+            if (X0 - s% X(i) < 0.001) then
+                mX0 = s% m(i) / Msun
+                rX0 = s% r(i) / Rsun
+                exit 
+            end if 
+         end do
+         
          if (s% x_logical_ctrl(1)) then 
              names(1) = "M_BH"
-             vals(1) = s% xtra(1) / Msun ! M_BH / Msun
+             vals(1) = s% xtra(1) / Msun  ! M_BH / Msun
              names(2) = "L_BH"
              vals(2)  = s% xtra(2) / Lsun ! L_BH / Lsun
              names(3) = "R_B"
@@ -277,6 +324,18 @@
              vals(4)  = s% xtra(4) / Msun ! M_dot / Msun
              names(5) = "dm/dt"
              vals(5)  = s% xtra(5) / Msun ! dm_dt
+             names(6) = "mX0"
+             vals(6)  = mX0
+             names(7) = "rX0"
+             vals(7)  = rX0
+             names(8) = "kap_center" ! central opacity
+             vals(8)  = s% xtra(7) 
+             names(9) = "Bondi"
+             vals(9)  = s% xtra(8) ! Bondi accretion 
+             names(10) = "L_B"
+             vals(10) = s% xtra(9) / Lsun ! Bondi luminosity 
+             names(11) = "L_E"
+             vals(11) = s% xtra(10) / Lsun ! Eddington luminosity 
          end if
          
          ! note: do NOT add the extras names to history_columns.list
