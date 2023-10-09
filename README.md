@@ -16,10 +16,10 @@ Call my name
 Through the cream
 And I'll hear you scream again
 
-Black hole sun
+Black hole Sun
 Won't you come
 And wash away the rain?
-Black hole sun
+Black hole Sun
 Won't you come
 Won't you come
 Won't you come?
@@ -41,11 +41,11 @@ Heaven send
 Hell away
 No one sings like you anymore
 
-Black hole sun
+Black hole Sun
 Won't you come
 
 And wash away the rain?
-Black hole sun
+Black hole Sun
 Won't you come
 Won't you come?
 ```
@@ -144,6 +144,6 @@ The crux of the code is a modification to the [MESA](https://mesa.sourceforge.ne
 Hang my head
 Drown my fear
 Till you all just disappear
-Black hole sun
+Black hole Sun
 Won't you come
 ```
