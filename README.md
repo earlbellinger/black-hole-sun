@@ -99,7 +99,7 @@ The crux of the code is a modification to the [MESA](https://mesa.sourceforge.ne
           M_cav = 8 * pi / 3 * rho * pow(R_B, 3)       ! mass of cavity (g)
           new_core_mass = (M_BH_new + M_cav) / Msun    ! new core mass (Msun)
           core_avg_eps = L_BH / (new_core_mass * Msun) ! average specific energy generation rate (erg/g s)
-          core_avg_rho = 1 / (4 / 3 * pi) * (new_core_mass * Msun) / pow(R_B, 3) ! avg core density (g/cm^3)
+          core_avg_rho = 1/(4/3*pi) * (new_core_mass * Msun) / pow(R_B, 3) ! avg core density (g/cm^3)
           
           s% max_timestep = timestep_factor * M_BH / ((1 - rad_eff) * M_dot) ! maximum timestep (s)
           
