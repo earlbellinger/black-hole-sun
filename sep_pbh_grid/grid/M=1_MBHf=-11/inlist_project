@@ -1,0 +1,93 @@
+&star_job
+    create_pre_main_sequence_model = .true.
+    change_initial_net = .true. 
+    new_net_name = 'pp_cno_extras_o18_ne22.net'
+    
+    new_core_mass = .00000000001000000000
+    dlg_core_mass_per_step = 1d-1
+/ ! end of star_job namelist
+
+
+&eos
+    !use_Skye = .false.
+/ ! end of eos namelist
+
+
+&kap
+    Zbase = 0.016669112141916194
+/ ! end of kap namelist
+
+
+&controls
+    initial_mass = 1
+    
+    initial_y = 0.2607859315548244
+    initial_z = 0.016669112141916194
+    mixing_length_alpha = 1.6639249313936648
+    
+    max_allowed_nz = 20000
+    mesh_delta_coeff = 0.2
+    time_delta_coeff = 0.2
+    
+    min_dq = 1d-15
+    min_dq_for_split = 1d-15
+    min_dq_for_xa = 1d-15
+    min_dq_for_xa_convective = 1d-7
+    min_dq_for_logT = 1d-15
+    mesh_min_dlnR = 1d-10
+    max_surface_cell_dq = 1d-13
+    max_center_cell_dq = 1d-10
+    
+    !convective_bdy_weight = 1
+    !convective_bdy_dq_limit = 1d-6
+    R_function_param = 1d-5
+    R_function2_weight = 1
+    R_function2_param1 = 0.99
+    M_function_weight = 1
+    
+    !Lnuc_div_L_zams_limit = 0.99d0
+    !stop_near_zams = .true.
+    
+    !write_history_flag = .false.
+    write_profiles_flag = .false.
+    history_interval = 1
+    photo_interval = -1
+    profile_interval = -1
+    
+    do_conv_premix = .true.
+    
+    overshoot_scheme(1) = 'exponential'
+    overshoot_zone_type(1) = 'any'
+    overshoot_zone_loc(1) = 'any'
+    overshoot_bdy_loc(1) = 'any'
+    overshoot_f(1) = 0.01
+    overshoot_f0(1) = 0.005
+    
+    write_profiles_flag = .false.
+    
+    write_pulse_data_with_profile = .true.
+    pulse_data_format = 'GYRE'
+    add_atmosphere_to_pulse_data = .true.
+    add_center_point_to_pulse_data = .true.
+    keep_surface_point_for_pulse_data = .true.
+    add_double_points_to_pulse_data = .true.
+    
+    atm_T_tau_opacity = 'varying'
+    
+    ! stop when the center mass fraction of h1 drops below this limit
+    !xa_central_lower_limit_species(1) = 'h1'
+    !xa_central_lower_limit(1) = 1d-2
+    max_age = 13d9
+    
+    x_logical_ctrl(1) = .true.  ! accrete onto black hole 
+    x_logical_ctrl(2) = .true.  ! limit by Eddington 
+    x_ctrl(1) = 0.08            ! radiative efficiency 
+    x_ctrl(2) = 0.1             ! convective efficiency 
+    x_ctrl(3) = 1               ! BH mass growth timestep factor 
+    x_ctrl(4) = -1 ! 1d-3       ! stop when BH reaches this mass 
+    
+    steps_before_use_gold_tolerances = 100
+    !energy_eqn_option = 'dedt'
+    !use_gold_tolerances = .true.
+/ ! end of controls namelist
+
