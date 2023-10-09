@@ -83,7 +83,7 @@ The crux of the code is a modification to the [MESA](https://mesa.sourceforge.ne
           
           M_BH = s% xtra(1) ! black hole mass (g)
           
-          M_dot_BH = 16*pi / (rad_eff / (1 - rad_eff)) * con_eff/gamma1/c_s*rho * pow(G*M_BH, 2) / c2 ! g/s
+          M_dot_BH = 16*pi / (rad_eff / (1 - rad_eff)) * con_eff/gamma1/c_s*rho * pow(G*M_BH, 2)/c2 ! g/s
           
           L_Edd = 4*pi * clight * G * M_BH / opacity  ! erg/s
           L_Bondi = (rad_eff / (1 - rad_eff)) * M_dot_BH * c2 ! erg/s
