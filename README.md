@@ -1,3 +1,5 @@
+**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole.]()*. ApJ accepted.
+
 # Black Hole Sun
 ```
 In my eyes
@@ -22,8 +24,7 @@ Won't you come
 Won't you come?
 ```
 
-**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole.]()*. ApJ accepted.
-
+The supplied notebooks generate all the figures in the paper. 
 
 ```
 Stuttering
@@ -48,11 +49,8 @@ Won't you come
 Won't you come?
 ```
 
-The supplied notebooks generate all the figures in the paper. 
-
 The crux of the code is a modification to the [MESA](https://mesa.sourceforge.net/) `run_star_extras.f90` file, the most important contents of which is the following FORTRAN subroutine to model the growth of the black hole: 
-
-```
+```fortran
       subroutine black_hole_accretion(id, s, startup, ierr)
           integer, intent(in) :: id
           logical, intent(in) :: startup
