@@ -50,7 +50,7 @@ Won't you come
 Won't you come?
 ```
 
-The crux of the code is a modification to the [MESA](https://mesa.sourceforge.net/) `run_star_extras.f90` file, the most important contents of which is the following FORTRAN subroutine to model the growth of the black hole: 
+The crux of the code is a modification to the [MESA](https://mesa.sourceforge.net/) [`run_star_extras.f90`](https://github.com/earlbellinger/black-hole-sun/blob/main/sep_pbh_grid/template/src/run_star_extras.f90) file, the most important contents of which is the following FORTRAN subroutine to model the growth of the black hole: 
 ```fortran
       subroutine black_hole_accretion(id, s, startup, ierr)
           integer, intent(in) :: id
