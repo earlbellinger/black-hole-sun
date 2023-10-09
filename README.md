@@ -1,6 +1,7 @@
-**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole.]()*. ApJ accepted.
-
 # Black Hole Sun
+
+**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole]()*. ApJ accepted.
+
 ```
 In my eyes
 Indisposed
