@@ -140,6 +140,14 @@ The crux of the code is a modification to the [MESA](https://mesa.sourceforge.ne
       end subroutine black_hole_accretion
 ```
 
+This code implements functionality for several user-supplied parameters to be specified in the `&controls` namelist: 
+```
+    x_ctrl(1) = 0.08 ! radiative efficiency (epsilon) 
+    x_ctrl(2) = 1    ! convective efficiency (eta) 
+    x_ctrl(3) = 1    ! timestep factor based on black hole growth mass, lower means slower growth 
+```
+It takes the initial mass of the black hole from the `&star_jobs` parameter `new_core_mass`. 
+
 ```
 Hang my head
 Drown my fear
