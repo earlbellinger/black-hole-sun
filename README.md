@@ -144,7 +144,7 @@ This code implements functionality for several user-supplied parameters to be sp
 ```
     x_ctrl(1) = 0.08 ! radiative efficiency (epsilon) 
     x_ctrl(2) = 1    ! convective efficiency (eta) 
-    x_ctrl(3) = 1    ! timestep factor based on black hole growth mass, lower means slower growth 
+    x_ctrl(3) = 1    ! timestep factor based on black hole mass growth, lower means slower growth 
 ```
 It takes the initial mass of the black hole from the `&star_jobs` parameter `new_core_mass`. 
 
