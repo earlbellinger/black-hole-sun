@@ -1,6 +1,6 @@
 # Black Hole Sun
 
-**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole]()*. ApJ accepted.
+**[Bellinger, E. P.](https://earlbellinger.com), Caplan, M. E., Ryu, T., Bollimpalli, D., Ball, W. H., Kühnel, F., Farmer, R., de Mink, S. E., Christensen-Dalsgaard, J.** (2023). *[Solar evolution models with a central black hole](https://github.com/earlbellinger/black-hole-sun/blob/main/Solar_evolution_models_with_a_central_black_hole.pdf)*. ApJ accepted.
 
 ```
 In my eyes
